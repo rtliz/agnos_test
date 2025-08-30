@@ -1,0 +1,59 @@
+import next from "next";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
+
+const dev = process.env.NODE_ENV !== "production";
+const hostname = "localhost";
+const port = 3001;
+// when using middleware `hostname` and `port` must be provided below
+const app = next({ dev, hostname, port });
+const handler = app.getRequestHandler();
+
+app.prepare().then(() => {
+  const httpServer = createServer(handler);
+
+  const io = new Server(httpServer, {
+    cors: {
+      origin: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000", // อนุญาตให้ Client จาก Port 3000 เข้ามาได้
+      methods: ["GET", "POST"]
+    }
+  });
+  io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
+
+    socket.on('JOIN_FORM_ROOM', (data) => {
+      const formId = data.formId;
+      socket.join(formId);
+      console.log(`Socket ${socket.id} has joined the room for Form ${formId}`);
+    });
+
+    socket.on('PATIENT_FORM_UPDATE', (res) => {
+      const { formId,  data} = res;
+      console.log(`Broadcasting update for form ${formId} from ${socket.id}`);
+      socket.broadcast.to(formId).emit('PATIENT_FORM_UPDATE', data);
+    });
+
+    socket.on('MANAGE_FORMS', (_) => {
+      socket.join("MANAGE_FORMS");
+      console.log(`Socket ${socket.id} has joined the room for Form MANAGE_FORMS`);
+    });
+
+    socket.on('TRIGGER_FORM_UPDATE', (data) => {
+      socket.broadcast.to("MANAGE_FORMS").emit('TRIGGER_FORM_UPDATE', data);
+    });
+
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected:", socket.id);
+    });
+  });
+
+  httpServer
+    .once("error", (err) => {
+      console.error(err);
+      process.exit(1);
+    })
+    .listen(port, () => {
+      console.log(`> Ready on http://${hostname}:${port}`);
+    });
+});
