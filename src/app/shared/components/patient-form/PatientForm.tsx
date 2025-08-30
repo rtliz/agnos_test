@@ -108,6 +108,7 @@ export function PatientForm({ formId }: { formId: string }) {
 
   useEffect(() => {
     if (isFirstChange) {
+      console.log("updateStatusForm: ");
       updateStatusForm({
         status: FormStatusEnum.IN_PROGRESS,
         id: formId,

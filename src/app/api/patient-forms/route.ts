@@ -61,7 +61,10 @@ export async function PUT(req: Request): Promise<NextResponse> {
     let form = currentForms.find((f: PatientForm) => f.id === body.id);
     if (form) {
       Object.assign(form, body);
-      const socket = getSocket();
+      const socket = getSocket(true);
+      socket.on("connect", () => {
+        console.log("socket connected", socket.id);
+      });
       socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
     }
 

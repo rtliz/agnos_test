@@ -39,6 +39,7 @@ app.prepare().then(() => {
     });
 
     socket.on('TRIGGER_FORM_UPDATE', (data) => {
+      console.log(`Socket ${socket.id} MANAGE_FORMS  > TRIGGER_FORM_UPDATE: `, data);
       socket.broadcast.to("MANAGE_FORMS").emit('TRIGGER_FORM_UPDATE', data);
     });
 
