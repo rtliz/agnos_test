@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
-    "socket:start": "node server.js"
+    "socket:start": "node server.js",
+    "build_docker": "docker build -t agnos-test --build-arg NEXT_PUBLIC_SOCKET_URL=\"http://localhost:3001\"  .",
+    "run_docker": "docker run -p 3000:3000 agnos-test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",

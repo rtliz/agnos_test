@@ -1,16 +1,16 @@
+import { addForm, getForms } from "@/app/shared/data/forms";
 import { SocketEnum } from "@/app/shared/enums/socket.enum";
 import { ApiResponse } from "@/app/shared/types/api/response";
 import type { PatientForm } from "@/app/shared/types/patient-form";
 import { getSocket } from "@/lib/socketClient";
 import { NextResponse } from "next/server";
 
-export let forms: PatientForm[] = [];
-
 export async function POST(req: Request): Promise<NextResponse> {
   try {
     const newForm: PatientForm = await req.json();
-    newForm.id = (forms.length + 1).toString();
-    forms.push(newForm);
+    const currentForms = getForms();
+    newForm.id = (currentForms.length + 1).toString();
+    addForm(newForm);
 
     const response: ApiResponse<PatientForm> = {
       status: "success",
@@ -37,15 +37,16 @@ export async function POST(req: Request): Promise<NextResponse> {
 }
 
 export async function GET(): Promise<NextResponse> {
+  const currentForms = getForms();
   const response: ApiResponse<PatientForm[]> = {
     status: "success",
-    data: forms?.sort((a, b) =>
+    data: currentForms.sort((a: PatientForm, b: PatientForm) =>
       a.status.toString().localeCompare(b.status.toString())
     ),
     metadata: {
-      total: forms.length,
+      total: currentForms.length,
       page: 1,
-      limit: forms.length,
+      limit: currentForms.length,
       totalPages: 1,
     },
   };
@@ -56,8 +57,8 @@ export async function GET(): Promise<NextResponse> {
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     const body = await req.json();
-
-    let form = forms.find((f) => f.id === body.id);
+    const currentForms = getForms();
+    let form = currentForms.find((f: PatientForm) => f.id === body.id);
     if (form) {
       Object.assign(form, body);
       const socket = getSocket();
@@ -67,6 +68,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const response: ApiResponse<PatientForm | null> = {
       status: "success",
       message: "Form updated successfully",
+      data: null,
     };
 
     return NextResponse.json(response);

@@ -1,12 +1,13 @@
+import { getForms } from "@/app/shared/data/forms";
 import type { ApiResponse } from "@/app/shared/types/api/response";
 import { NextResponse } from "next/server";
-import { forms } from "../route";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { formId: string } }
-) {
-  const form = forms.find((f) => f.id === params.formId);
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const formId = requestUrl.searchParams.get("formId");
+  const currentForms = getForms();
+
+  const form = currentForms.find((f) => f.id === formId);
 
   const response: ApiResponse<typeof form> = {
     status: "success",
