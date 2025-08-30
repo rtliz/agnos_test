@@ -1,0 +1,47 @@
+# cloudbuild.yaml
+steps:
+  # Step 1: Build Docker Image for Socket Server
+  - name: "gcr.io/cloud-builders/docker"
+    id: "Build Socket Server Image"
+    args:
+      - "build"
+      - "-t"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+      - "-f"
+      - "Dockerfile.socket"
+      - "."
+    env:
+      - "DOCKER_BUILDKIT=1"
+
+  # Step 2: Push Socket Server Image
+  - name: "gcr.io/cloud-builders/docker"
+    id: "Push Socket Server Image"
+    args:
+      - "push"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+
+  # Step 3: Deploy Socket Server to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    id: "Deploy Socket Server"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "${_SERVICE_NAME}-socket"
+      - "--image"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+      - "--region"
+      - "asia-southeast1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+      - "--port"
+      - "3001"
+      - "--set-env-vars"
+      - "NEXT_PUBLIC_FRONTEND_URL=${_NEXT_PUBLIC_FRONTEND_URL}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+images:
+  - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
