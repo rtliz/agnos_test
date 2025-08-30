@@ -6,7 +6,7 @@ steps:
     args:
       - "build"
       - "-t"
-      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}:$COMMIT_SHA"
       - "-f"
       - "Dockerfile.socket"
       - "."
@@ -18,7 +18,7 @@ steps:
     id: "Push Socket Server Image"
     args:
       - "push"
-      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}:$COMMIT_SHA"
 
   # Step 3: Deploy Socket Server to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -29,7 +29,7 @@ steps:
       - "deploy"
       - "${_SERVICE_NAME}-socket"
       - "--image"
-      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+      - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}:$COMMIT_SHA"
       - "--region"
       - "asia-southeast1"
       - "--platform"
@@ -44,4 +44,4 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}-socket:$COMMIT_SHA"
+  - "asia-southeast1-docker.pkg.dev/${_AR_PROJECT_ID}/cloud-run-source-deploy/${_SERVICE_NAME}:$COMMIT_SHA"
