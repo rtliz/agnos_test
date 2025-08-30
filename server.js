@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-const port = 3001;
+const port = process.env.PORT || 3001;;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
@@ -14,7 +14,7 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000", // อนุญาตให้ Client จาก Port 3000 เข้ามาได้
+      origin: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000", 
       methods: ["GET", "POST"]
     }
   });
