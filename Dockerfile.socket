@@ -1,12 +1,17 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 RUN npm install
 
-COPY server.js ./
+# Copy Next.js app files
+COPY . .
 
 EXPOSE 3001
+
+ARG NEXT_PUBLIC_FRONTEND_URL
+ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
 
 CMD ["node", "server.js"]

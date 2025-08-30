@@ -2,13 +2,16 @@
   "name": "agnos-test",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "socket:start": "node server.js",
     "build_docker": "docker build -t agnos-test --build-arg NEXT_PUBLIC_SOCKET_URL=\"http://localhost:3001\"  .",
-    "run_docker": "docker run -p 3000:3000 agnos-test"
+    "run_docker": "docker run -p 3000:3000 agnos-test",
+    "socket:build_docker": "docker build -t agnos-test-socket --build-arg NEXT_PUBLIC_FRONTEND_URL=\"http://localhost:3000\" -f Dockerfile.socket .",
+    "socket:run_docker": "docker run -p 3001:3001 agnos-test-socket"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
