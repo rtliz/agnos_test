@@ -2,30 +2,28 @@ import { PatientForm } from "@/app/shared/types/patient-form";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Tooltip } from "react-tooltip";
+import { FormStatusEnum } from "../../enums/form-status.enum";
 import { RouteEnum } from "../../enums/routes.enum";
-import { StatusBadge } from "./StatusBadge";
-
+import { StatusBadge } from "../../lib/StatusBadge";
 interface FormTableProps {
   patientForms: PatientForm[];
   onViewForm: (formId: string) => void;
 }
 
 export function FormTable({ patientForms, onViewForm }: FormTableProps) {
-  const copyLink = async (id: string) => {
-    try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/${
-          RouteEnum.PATIENT_FORM
-        }/${encodeURIComponent(id)}`
-      );
-      window.open(
-        `${window.location.origin}/${
-          RouteEnum.PATIENT_FORM
-        }/${encodeURIComponent(id)}`
-      );
-    } catch (err) {
-      console.error("Failed to copy link:", err);
-    }
+  const copyLink = async (item: any) => {
+    if (item.status === FormStatusEnum.SUBMITTED) return;
+    navigator.clipboard.writeText(
+      `${window.location.origin}/${RouteEnum.PATIENT_FORM}/${encodeURIComponent(
+        item.id
+      )}`
+    );
+    window.open(
+      `${window.location.origin}/${RouteEnum.PATIENT_FORM}/${encodeURIComponent(
+        item.id
+      )}`
+    );
   };
 
   return (
@@ -43,20 +41,33 @@ export function FormTable({ patientForms, onViewForm }: FormTableProps) {
         {patientForms.map((item) => (
           <tr key={item.id} className="hover:bg-gray-50">
             <td className="p-4 border border-gray-200">
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon
-                  icon={faEye}
+              <div className="flex items-center justify-center gap-2">
+                <Tooltip id="table-tooltip" />
+
+                <button
+                  data-tooltip-id="table-tooltip"
+                  data-tooltip-content="View Form"
                   onClick={() => onViewForm(item.id ?? "")}
-                  className="cursor-pointer"
-                />
-                <FontAwesomeIcon
-                  icon={faFile}
-                  className="cursor-pointer"
-                  onClick={() => copyLink(item.id ?? "")}
-                />
+                  className="cursor-pointer rounded-full  p-2  "
+                >
+                  <FontAwesomeIcon icon={faEye} className="text-blue-700" />
+                </button>
+                <button
+                  data-tooltip-id="table-tooltip"
+                  data-tooltip-content="Copy Link & Open New Tab"
+                  onClick={() => copyLink(item)}
+                  disabled={item.status === FormStatusEnum.SUBMITTED}
+                  className={` rounded-full p-2 ${
+                    item.status === FormStatusEnum.SUBMITTED
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faFile} className="text-green-700" />
+                </button>
               </div>
             </td>
-            <td className="p-4 border border-gray-200">
+            <td className="p-4 border border-gray-200 text-center">
               <StatusBadge status={item.status} />
             </td>
             <td className="p-4 border border-gray-200">{item.id}</td>

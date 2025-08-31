@@ -3,6 +3,7 @@
 import { useSocket } from "@/hooks/useSocket";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { RouteAPIEnum } from "../../enums/routes-api.enum";
@@ -16,6 +17,7 @@ interface Props {
 
 export function RealTimeFormView({ formId }: Props) {
   const [formData, setFormData] = useState<Partial<PatientData>>({});
+  const router = useRouter();
   const { socket } = useSocket(
     SocketEnum.JOIN_FORM_ROOM,
     decodeURIComponent(formId)
@@ -44,12 +46,14 @@ export function RealTimeFormView({ formId }: Props) {
       const response = await axios.get(
         `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
       );
-      if (response.data.status === "success") {
+      if (response.data.status === "success" && response.data.data) {
         console.log("response.data.data: ", response.data.data);
         setFormData((prev) => ({
           ...prev,
           ...response.data.data,
         }));
+      } else {
+        router.replace("/" + RouteEnum.NOTFOUND);
       }
     } catch (error) {
       console.error("Error fetching patient forms:", error);
@@ -85,15 +89,17 @@ export function RealTimeFormView({ formId }: Props) {
   return (
     <div className="h-full flex items-center justify-center  p-6 ">
       <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
-        <Link
-          href={"/" + RouteEnum.MANAGE}
-          className="mb-4 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"
-        >
-          Back
-        </Link>
-        <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
-          Form ID {formId}
-        </h1>
+        <div className="flex gap-4 items-center ">
+          <Link
+            href={"/" + RouteEnum.MANAGE}
+            className="mb-4 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"
+          >
+            Back
+          </Link>
+          <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
+            Form ID {formId}
+          </h1>
+        </div>
         <h2 className="text-xl font-semibold text-blue-900">
           Patient Information (Real-time)
         </h2>

@@ -12,7 +12,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function FormManagement() {
+export default function FormManagementPage() {
   const router = useRouter();
   const [patientForms, setPatientForms] = useState<PatientForm[]>([]);
   const [loading, setLoading] = useState(false);
@@ -80,10 +80,10 @@ export default function FormManagement() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center flex-wrap gap-4">
           <h1 className="text-2xl font-bold">Form Management</h1>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors disabled:opacity-50 cursor-pointer"
+            className="cursor-pointer px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-blue-100 font-semibold w-fit flex items-center gap-2 shadow"
             onClick={generateForm}
             disabled={loading}
           >

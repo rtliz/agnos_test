@@ -5,13 +5,15 @@ import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Select from "react-select";
 import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { FormStatusEnum } from "../../enums/form-status.enum";
 import { RouteAPIEnum } from "../../enums/routes-api.enum";
+import { RouteEnum } from "../../enums/routes.enum";
 import { SocketEnum } from "../../enums/socket.enum";
-import { CustomDatePicker } from "../common/CustomDatePicker";
+import { CustomDatePicker } from "../../lib/CustomDatePicker";
 import { formFields, PatientData } from "./config-form";
 
 interface Religion {
@@ -21,6 +23,7 @@ interface Religion {
 }
 
 export function PatientForm({ formId }: { formId: string }) {
+  const router = useRouter();
   const [showMobileSelect, setShowMobileSelect] = useState<{
     field: string;
     options: any[];
@@ -42,9 +45,9 @@ export function PatientForm({ formId }: { formId: string }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    fetchForms();
     fetchReligions();
     fetchGenders();
-    fetchForms();
   }, [formId]);
 
   const fetchForms = async () => {
@@ -52,12 +55,15 @@ export function PatientForm({ formId }: { formId: string }) {
       const response = await axios.get(
         `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
       );
-      if (response.data.status === "success") {
+      console.log("response.data.data: ", response.data);
+      if (response.data.status === "success" && response.data.data) {
         if (response.data.data?.status === FormStatusEnum.SUBMITTED) {
           setIsSubmitted(true);
         }
         setIsLoading(false);
         setFormData(response.data.data);
+      } else {
+        router.replace("/" + RouteEnum.NOTFOUND);
       }
     } catch (error) {
       console.error("Error fetching patient forms:", error);
@@ -143,6 +149,8 @@ export function PatientForm({ formId }: { formId: string }) {
     }
   };
 
+  const religionOptions = useMemo(() => religions, [religions]);
+  const genderOptions = useMemo(() => genders, [genders]);
   const renderField = (field: (typeof formFields)[0]) => {
     const commonProps = {
       id: field.name,
@@ -181,9 +189,9 @@ export function PatientForm({ formId }: { formId: string }) {
     if (field.type === FieldTypeEnum.select) {
       let options = field.options || [];
       if (field.name === "religion") {
-        options = religions;
+        options = religionOptions;
       } else if (field.name === "gender") {
-        options = genders;
+        options = genderOptions;
       }
       // Mobile bottom sheet for select
       const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
@@ -282,7 +290,7 @@ export function PatientForm({ formId }: { formId: string }) {
             <label className="text-3xl font-bold text-green-700 drop-shadow-sm">
               Form Submitted Successfully!
             </label>
-            <p className="text-gray-600 text-center text-lg">
+            <p className="text-gray-600 text-center text-md">
               Thank you for your submission.
               <br />
               Your information has been saved successfully.
