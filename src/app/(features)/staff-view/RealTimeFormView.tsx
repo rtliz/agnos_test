@@ -5,11 +5,11 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FieldTypeEnum } from "../../enums/field-type.enum";
-import { RouteAPIEnum } from "../../enums/routes-api.enum";
-import { RouteEnum } from "../../enums/routes.enum";
-import { SocketEnum } from "../../enums/socket.enum";
-import { StatusBadge } from "../../lib/StatusBadge";
+import { StatusBadge } from "../../../lib/StatusBadge";
+import { FieldTypeEnum } from "../../shared/enums/field-type.enum";
+import { RouteAPIEnum } from "../../shared/enums/routes-api.enum";
+import { RouteEnum } from "../../shared/enums/routes.enum";
+import { SocketEnum } from "../../shared/enums/socket.enum";
 import { formFields, PatientData } from "../patient-form/config-form";
 
 interface Props {
@@ -88,8 +88,8 @@ export function RealTimeFormView({ formId }: Props) {
   };
 
   return (
-    <div className="h-full flex items-center justify-center  p-6 ">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
+    <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
+      <div className="w-full max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
         <div className="flex gap-4 items-center justify-between">
           <div className="flex gap-4 items-center justify-center">
             <Link
@@ -104,7 +104,7 @@ export function RealTimeFormView({ formId }: Props) {
           </div>
           <StatusBadge status={formData.status} />
         </div>
-        <h2 className="text-xl font-semibold text-blue-900">
+        <h2 className="text-xl font-semibold text-blue-900 border-b border-blue-100 pb-2">
           Patient Information (Real-time)
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

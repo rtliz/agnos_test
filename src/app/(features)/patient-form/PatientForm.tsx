@@ -1,5 +1,10 @@
 "use client";
 
+import { FieldTypeEnum } from "@/app/shared/enums/field-type.enum";
+import { FormStatusEnum } from "@/app/shared/enums/form-status.enum";
+import { RouteAPIEnum } from "@/app/shared/enums/routes-api.enum";
+import { RouteEnum } from "@/app/shared/enums/routes.enum";
+import { SocketEnum } from "@/app/shared/enums/socket.enum";
 import { useSocket } from "@/hooks/useSocket";
 import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,11 +14,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
-import { FieldTypeEnum } from "../../enums/field-type.enum";
-import { FormStatusEnum } from "../../enums/form-status.enum";
-import { RouteAPIEnum } from "../../enums/routes-api.enum";
-import { RouteEnum } from "../../enums/routes.enum";
-import { SocketEnum } from "../../enums/socket.enum";
 import { formFields, PatientData } from "./config-form";
 
 interface Religion {
@@ -323,7 +323,7 @@ export function PatientForm({ formId }: { formId: string }) {
           <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
             <div className="bg-white shadow-2xl rounded-2xl p-0 sm:p-8 grid gap-8 border border-blue-100 relative">
               {/* Sticky header for mobile */}
-              <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-md rounded-t-2xl px-4 py-4 border-b border-blue-100 flex flex-col items-center">
+              <div className="bg-white/90 backdrop-blur-md rounded-t-2xl px-4 pb-4 border-b border-blue-100 flex flex-col items-center">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-700 tracking-tight drop-shadow-sm">
                   Form ID {formId}
                 </h1>

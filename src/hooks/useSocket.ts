@@ -1,4 +1,4 @@
-import { PatientData } from "@/app/shared/components/patient-form/config-form";
+import { PatientData } from "@/app/(features)/patient-form/config-form";
 import { SocketEnum } from "@/app/shared/enums/socket.enum";
 import { getSocket } from "@/lib/socketClient";
 import { useEffect, useRef, useState } from "react";

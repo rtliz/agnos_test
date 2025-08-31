@@ -1,7 +1,7 @@
 // หน้าหลักสำหรับ manage forms
 "use client";
 
-import { FormTable } from "@/app/shared/components/form-management/FormTable";
+import { FormTable } from "@/app/(features)/manage/FormTable";
 import { FormStatusEnum } from "@/app/shared/enums/form-status.enum";
 import { RouteAPIEnum } from "@/app/shared/enums/routes-api.enum";
 import { RouteEnum } from "@/app/shared/enums/routes.enum";
