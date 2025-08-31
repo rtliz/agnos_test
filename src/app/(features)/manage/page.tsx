@@ -22,15 +22,11 @@ export default function FormManagement() {
   }, []);
   useEffect(() => {
     socket?.on(SocketEnum.TRIGGER_FORM_UPDATE, (updatedForm: PatientForm) => {
-      console.log("updatedForm: ", updatedForm);
+      console.log("TRIGGER_FORM_UPDATE: ", updatedForm);
       setPatientForms((currentForms) => {
         const updatedForms = currentForms.map((form) =>
           form.id === updatedForm.id
-            ? {
-                ...form,
-                status: updatedForm.status,
-                updatedAt: updatedForm.updatedAt,
-              }
+            ? { ...form, status: updatedForm.status }
             : form
         );
         return updatedForms;
@@ -82,19 +78,21 @@ export default function FormManagement() {
   };
 
   return (
-    <div className="p-8 grid gap-4">
-      <div className="flex justify-between items-center flex-wrap gap-2">
-        <h1 className="text-2xl font-bold">Form Management</h1>
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors disabled:opacity-50 cursor-pointer"
-          onClick={generateForm}
-          disabled={loading}
-        >
-          {loading ? "Generating..." : "Generate Form"}
-        </button>
-      </div>
-      <div className="overflow-x-auto">
-        <FormTable patientForms={patientForms} onViewForm={handleViewForm} />
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold">Form Management</h1>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors disabled:opacity-50 cursor-pointer"
+            onClick={generateForm}
+            disabled={loading}
+          >
+            {loading ? "Generating..." : "Generate Form"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <FormTable patientForms={patientForms} onViewForm={handleViewForm} />
+        </div>
       </div>
     </div>
   );

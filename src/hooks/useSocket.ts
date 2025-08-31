@@ -55,5 +55,19 @@ export function useSocket(room: SocketEnum, formId?: string) {
     });
   };
 
-  return { socket, emitFormUpdate };
+  const emitUpdateStatus = (data: any) => {
+    const s = socketRef.current;
+    if (!s) return;
+
+    s.emit(SocketEnum.TRIGGER_FORM_UPDATE, data);
+  };
+
+  const emitFormClearData = () => {
+    const s = socketRef.current;
+    if (!s) return;
+
+    s.emit(SocketEnum.CLEAR_FORM_DATA, formId);
+  };
+
+  return { socket, emitFormUpdate, emitFormClearData, emitUpdateStatus };
 }

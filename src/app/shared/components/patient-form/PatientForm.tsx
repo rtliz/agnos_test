@@ -5,7 +5,7 @@ import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { FormStatusEnum } from "../../enums/form-status.enum";
@@ -21,13 +21,19 @@ interface Religion {
 }
 
 export function PatientForm({ formId }: { formId: string }) {
+  const [showMobileSelect, setShowMobileSelect] = useState<{
+    field: string;
+    options: any[];
+  } | null>(null);
+  const [mobileSelectValue, setMobileSelectValue] = useState<string>("");
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [formData, setFormData] = useState<Partial<PatientData>>(
     {} as Partial<PatientData>
   );
   const [religions, setReligions] = useState<Religion[]>([]);
   const [genders, setGenders] = useState<Religion[]>([]);
   const [loading, setLoading] = useState(false);
-  const { emitFormUpdate } = useSocket(
+  const { emitFormUpdate, emitFormClearData, emitUpdateStatus } = useSocket(
     SocketEnum.JOIN_FORM_ROOM,
     decodeURIComponent(formId)
   );
@@ -99,7 +105,9 @@ export function PatientForm({ formId }: { formId: string }) {
       if (response.data.status === "success") {
         if (body.status === FormStatusEnum.SUBMITTED) {
           setIsSubmitted(true);
+          emitFormClearData();
         }
+        emitUpdateStatus({ status: body.status, id: formId });
       }
     } catch (error) {
       console.error("Error fetching religions:", error);
@@ -140,6 +148,17 @@ export function PatientForm({ formId }: { formId: string }) {
       id: field.name,
       name: field.name,
       required: field.required,
+      ref: ((el: HTMLInputElement | null) => {
+        inputRefs.current[field.name] = el;
+      }) as React.RefCallback<HTMLInputElement>,
+      onFocus: () => {
+        setTimeout(() => {
+          inputRefs.current[field.name]?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }, 300);
+      },
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
         handleChange(field.name, e.target.value),
       className:
@@ -161,13 +180,29 @@ export function PatientForm({ formId }: { formId: string }) {
 
     if (field.type === FieldTypeEnum.select) {
       let options = field.options || [];
-
       if (field.name === "religion") {
         options = religions;
       } else if (field.name === "gender") {
         options = genders;
       }
-
+      // Mobile bottom sheet for select
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+      if (isMobile) {
+        return (
+          <button
+            type="button"
+            className="w-full h-9 px-4 border border-gray-300 rounded-md bg-white text-left"
+            onClick={() => {
+              setShowMobileSelect({ field: field.name, options });
+              setMobileSelectValue(formData?.[field.name]?.toString() ?? "");
+            }}
+          >
+            {options.find((opt) => opt.value === formData?.[field.name])
+              ?.label || field.placeholder}
+          </button>
+        );
+      }
+      // Desktop normal select
       return (
         <Select
           options={options}
@@ -191,7 +226,7 @@ export function PatientForm({ formId }: { formId: string }) {
           maxLength={10}
           value={formData?.[field.name]?.toString() ?? ""}
           onChange={(e) => {
-            const value = e.target.value.replace(/\D/g, ""); // เอาเฉพาะตัวเลข
+            const value = e.target.value.replace(/\D/g, ""); // Only numbers
             handleChange(field.name, value);
           }}
           onKeyPress={(e) => {
@@ -215,87 +250,143 @@ export function PatientForm({ formId }: { formId: string }) {
     );
   };
 
-  return isLoading ? (
-    <div className="h-screen flex items-center justify-center">
-      <div className="loader scale-125"></div>
-    </div>
-  ) : isSubmitted ? (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="h-screen flex flex-col items-center justify-center "
-    >
-      <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-xl shadow-xl border border-green-100">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
-          <svg
-            className="w-10 h-10 text-green-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+  return (
+    <>
+      {isLoading ? (
+        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
+          <div className="loader scale-125"></div>
         </div>
-        <label className="text-3xl font-bold text-green-700 drop-shadow-sm">
-          Form Submitted Successfully!
-        </label>
-        <p className="text-gray-600 text-center text-lg">
-          Thank you for your submission.
-          <br />
-          Your information has been saved successfully.
-        </p>
-      </div>
-    </motion.div>
-  ) : (
-    <div className="h-full flex items-center justify-center  p-8 ">
-      <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-        <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
-          <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
-            Form ID {formId}
-          </h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {formFields.map((field) => (
-              <div key={field.name} className="grid gap-2">
-                <label
-                  htmlFor={field.name}
-                  className="block text-base font-semibold text-blue-900 mb-1 tracking-wide"
-                >
-                  {field.label}
-                  {field.required && (
-                    <span className="text-red-500 ml-1">*</span>
-                  )}
-                </label>
-                {renderField(field)}
+      ) : isSubmitted ? (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-100"
+        >
+          <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-xl shadow-xl border border-green-100">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
+              <svg
+                className="w-10 h-10 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <label className="text-3xl font-bold text-green-700 drop-shadow-sm">
+              Form Submitted Successfully!
+            </label>
+            <p className="text-gray-600 text-center text-lg">
+              Thank you for your submission.
+              <br />
+              Your information has been saved successfully.
+            </p>
+          </div>
+        </motion.div>
+      ) : (
+        <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-0 sm:p-6">
+          <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
+            <div className="bg-white shadow-2xl rounded-2xl p-0 sm:p-8 grid gap-8 border border-blue-100 relative">
+              {/* Sticky header for mobile */}
+              <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-md rounded-t-2xl px-4 py-4 border-b border-blue-100 flex flex-col items-center">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-700 tracking-tight drop-shadow-sm">
+                  Form ID {formId}
+                </h1>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-center mt-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="cursor-pointer flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
-            >
-              {loading ? (
-                <>
-                  <FontAwesomeIcon icon={faSpinner} spin />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon icon={faSave} />
-                  Save
-                </>
-              )}
-            </button>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 sm:px-0 pb-4">
+                {formFields.map((field) => (
+                  <div key={field.name} className="grid gap-2">
+                    <label
+                      htmlFor={field.name}
+                      className="block text-base font-semibold text-blue-900 mb-1 tracking-wide"
+                    >
+                      {field.label}
+                      {field.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    {renderField(field)}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-center mt-2 pb-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="cursor-pointer flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                >
+                  {loading ? (
+                    <>
+                      <FontAwesomeIcon icon={faSpinner} spin />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSave} />
+                      Save
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      )}
+      {/* Mobile Select Bottom Sheet */}
+      {showMobileSelect && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowMobileSelect(null)}
+        >
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="grid gap-2 w-full max-w-md bg-white rounded-t-2xl shadow-2xl p-6 animate-slide-up max-h-[70dvh] "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-lg font-bold text-blue-700 mb-2 text-center">
+              Select{" "}
+              {showMobileSelect.field.charAt(0).toUpperCase() +
+                showMobileSelect.field.slice(1)}
+            </div>
+            <div className="grid gap-2 overflow-y-auto max-h-[calc(70dvh-200px)]">
+              {showMobileSelect.options.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`w-full text-left px-4 py-3 rounded-lg border ${
+                    mobileSelectValue === opt.value
+                      ? "bg-blue-100 border-blue-400"
+                      : "bg-gray-50 border-gray-200"
+                  } font-medium transition-all duration-150`}
+                  onClick={() => {
+                    handleChange(
+                      showMobileSelect.field as keyof PatientData,
+                      opt.value
+                    );
+                    setShowMobileSelect(null);
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <button
+              className="mt-6 w-full py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold"
+              onClick={() => setShowMobileSelect(null)}
+            >
+              Cancel
+            </button>
+          </motion.div>
+        </div>
+      )}
+    </>
   );
 }
