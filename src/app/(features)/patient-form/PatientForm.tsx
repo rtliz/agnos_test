@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
+import { toast } from "sonner";
 import { formFields, PatientData } from "./config-form";
 
 interface Religion {
@@ -42,6 +43,7 @@ export function PatientForm({ formId }: { formId: string }) {
   );
   const [isFirstChange, setIsFirstChange] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [invalid, setInvalid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -138,12 +140,11 @@ export function PatientForm({ formId }: { formId: string }) {
     try {
       const requiredFields = formFields.filter((f) => f.required);
       const isValid = requiredFields.every((f) => formData[f.name]);
+      setInvalid(true);
       if (!isValid) {
-        document
-          .getElementById(
-            requiredFields.find((f) => !formData[f.name])?.name || ""
-          )
-          ?.focus();
+        toast.warning("Please fill all required fields");
+        let formInvalidField = requiredFields.find((f) => !formData[f.name]);
+        document.getElementById(formInvalidField?.name || "")?.focus();
         return;
       }
       updateStatusForm({
@@ -180,13 +181,17 @@ export function PatientForm({ formId }: { formId: string }) {
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
         handleChange(field.name, e.target.value),
       className:
-        "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        `w-full border h-9 px-4 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ` +
+        (field.required && invalid && !formData?.[field.name]
+          ? "border-red-400"
+          : "border-gray-300"),
     };
 
     if (field.type === FieldTypeEnum.date) {
       const dateValue = formData?.[field.name];
       return (
         <DatePicker
+          id={field.name}
           selected={typeof dateValue === "string" ? new Date(dateValue) : null}
           placeholderText={field.placeholder}
           onChange={(date) =>
@@ -194,7 +199,13 @@ export function PatientForm({ formId }: { formId: string }) {
           }
           required={field.required}
           dateFormat="dd/MM/yyyy"
-          className="w-full px-4 h-[36px] border border-gray-300  rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500   transition-colors duration-200 bg-white  "
+          className={`
+            ${
+              field.required && invalid && !formData?.[field.name]
+                ? "border-red-400"
+                : "border-gray-300"
+            }
+            border w-full px-4 h-[36px] border border-gray-300  rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500   transition-colors duration-200 bg-white  `}
           popperClassName="z-50"
           popperPlacement="bottom-start"
           showPopperArrow={false}
@@ -213,23 +224,34 @@ export function PatientForm({ formId }: { formId: string }) {
       // Mobile bottom sheet for select
       const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
       if (isMobile) {
+        const label = options.find(
+          (opt) => opt.value === formData?.[field.name]
+        )?.label;
         return (
-          <input
-            {...commonProps}
-            placeholder={field.placeholder}
+          <button
+            type="button"
+            id={field.name}
+            name={field.name}
+            className={`${
+              field.required && invalid && !formData?.[field.name]
+                ? "border-red-400"
+                : "border-gray-300"
+            } border w-full h-9 px-4 border border-gray-300 rounded-md bg-white text-left`}
             onClick={() => {
               setShowMobileSelect({ field: field.name, options });
               setMobileSelectValue(formData?.[field.name]?.toString() ?? "");
             }}
-            value={formData?.[field.name]?.toString() ?? ""}
-            inputMode="none"
-            className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-          />
+          >
+            <div className={`${label ? "" : "text-[#8b8b8b]"}`}>
+              {label || field.placeholder}
+            </div>
+          </button>
         );
       }
       // Desktop normal select
       return (
         <Select
+          id={field.name}
           options={options}
           value={
             options?.find((opt) => opt.value === formData?.[field.name]) || null
@@ -239,7 +261,11 @@ export function PatientForm({ formId }: { formId: string }) {
           isSearchable
           isClearable
           required={field.required}
-          className="w-full"
+          className={`${
+            field.required && invalid && !formData?.[field.name]
+              ? "border-orange-400"
+              : "border-gray-300"
+          } w-full border`}
         />
       );
     }
@@ -252,7 +278,12 @@ export function PatientForm({ formId }: { formId: string }) {
           value={formData?.[field.name]?.toString() ?? ""}
           onChange={(e) => handleChange(field.name, e.target.value)}
           pattern="^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
-          className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          className={
+            `w-full border h-9 px-4 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ` +
+            (field.required && invalid && !formData?.[field.name]
+              ? "border-red-400"
+              : "border-gray-300")
+          }
         />
       );
     }
@@ -274,7 +305,12 @@ export function PatientForm({ formId }: { formId: string }) {
               e.preventDefault();
             }
           }}
-          className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          className={
+            `w-full border h-9 px-4 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ` +
+            (field.required && invalid && !formData?.[field.name]
+              ? "border-red-400"
+              : "border-gray-300")
+          }
         />
       );
     }
@@ -285,7 +321,12 @@ export function PatientForm({ formId }: { formId: string }) {
         type={field.type}
         value={formData?.[field.name]?.toString() ?? ""}
         onChange={(e) => handleChange(field.name, e.target.value)}
-        className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+        className={
+          `w-full border h-9 px-4 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ` +
+          (field.required && invalid && !formData?.[field.name]
+            ? "border-red-400"
+            : "border-gray-300")
+        }
       />
     );
   };
@@ -331,7 +372,11 @@ export function PatientForm({ formId }: { formId: string }) {
         </motion.div>
       ) : (
         <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
-          <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="w-full max-w-3xl mx-auto"
+          >
             <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100 relative">
               {/* Sticky header for mobile */}
               <div className="bg-white/90 backdrop-blur-md rounded-t-2xl p-4 border-b border-blue-100 flex flex-col items-center">
@@ -339,9 +384,9 @@ export function PatientForm({ formId }: { formId: string }) {
                   Form ID {formId}
                 </h1>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 sm:px-0 pb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0 pb-4">
                 {formFields.map((field) => (
-                  <div key={field.name} className="grid gap-2">
+                  <div key={field.name} className="relative grid gap-1">
                     <label
                       htmlFor={field.name}
                       className="block text-base font-semibold text-blue-900 mb-1 tracking-wide"
@@ -418,12 +463,6 @@ export function PatientForm({ formId }: { formId: string }) {
                 </button>
               ))}
             </div>
-            <button
-              className="mt-6 w-full py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold"
-              onClick={() => setShowMobileSelect(null)}
-            >
-              Cancel
-            </button>
           </motion.div>
         </div>
       )}

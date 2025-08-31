@@ -104,7 +104,7 @@ export const formFields: FormFieldConfig[] = [
   {
     name: "religion",
     label: "Religion (optional)",
-    placeholder: "religion",
+    placeholder: "Select your religion",
     type: FieldTypeEnum.select,
   },
 ];
