@@ -62,7 +62,17 @@ export async function PUT(req: Request): Promise<NextResponse> {
     if (form) {
       Object.assign(form, body);
       const socket = getSocket();
-      socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
+      await new Promise((resolve) => {
+        if (socket.connected) {
+          socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
+          resolve(true);
+        } else {
+          socket.once("connect", () => {
+            socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
+            resolve(true);
+          });
+        }
+      });
     }
 
     const response: ApiResponse<PatientForm | null> = {

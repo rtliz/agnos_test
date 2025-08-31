@@ -59,7 +59,15 @@ export function RealTimeFormView({ formId }: Props) {
     if (!value) return <span className="text-gray-400">No data available</span>;
 
     if (field.type === FieldTypeEnum.date) {
-      return <span>{new Date(value.toString()).toLocaleDateString()}</span>;
+      return (
+        <span>
+          {new Date(value.toString()).toLocaleDateString("th-TH", {
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit",
+          })}
+        </span>
+      );
     }
 
     if (field.type === FieldTypeEnum.select) {
