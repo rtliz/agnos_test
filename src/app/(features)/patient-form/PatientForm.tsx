@@ -108,6 +108,11 @@ export function PatientForm({ formId }: { formId: string }) {
         if (body.status === FormStatusEnum.SUBMITTED) {
           setIsSubmitted(true);
           emitFormClearData();
+          const updatedData = {
+            ...formData,
+            status: body.status,
+          };
+          emitFormUpdate(updatedData);
         }
         emitUpdateStatus({ status: body.status, id: formId });
       }
@@ -129,7 +134,6 @@ export function PatientForm({ formId }: { formId: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       updateStatusForm({
         ...formData,
@@ -199,17 +203,16 @@ export function PatientForm({ formId }: { formId: string }) {
       const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
       if (isMobile) {
         return (
-          <button
-            type="button"
-            className="w-full h-9 px-4 border border-gray-300 rounded-md bg-white text-left"
+          <input
+            {...commonProps}
+            placeholder={field.placeholder}
             onClick={() => {
               setShowMobileSelect({ field: field.name, options });
               setMobileSelectValue(formData?.[field.name]?.toString() ?? "");
             }}
-          >
-            {options.find((opt) => opt.value === formData?.[field.name])
-              ?.label || field.placeholder}
-          </button>
+            value={formData?.[field.name]?.toString() ?? ""}
+            className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          />
         );
       }
       // Desktop normal select
@@ -286,7 +289,7 @@ export function PatientForm({ formId }: { formId: string }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-100"
+          className="p-4 h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-100"
         >
           <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-xl shadow-xl border border-green-100">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
@@ -317,7 +320,7 @@ export function PatientForm({ formId }: { formId: string }) {
       ) : (
         <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
           <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-            <div className="bg-white shadow-2xl rounded-2xl p-4 grid gap-8 border border-blue-100 relative">
+            <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100 relative">
               {/* Sticky header for mobile */}
               <div className="bg-white/90 backdrop-blur-md rounded-t-2xl p-4 border-b border-blue-100 flex flex-col items-center">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-700 tracking-tight drop-shadow-sm">
