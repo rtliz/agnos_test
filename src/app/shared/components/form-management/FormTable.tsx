@@ -61,10 +61,22 @@ export function FormTable({ patientForms, onViewForm }: FormTableProps) {
             </td>
             <td className="p-4 border border-gray-200">{item.id}</td>
             <td className="p-4 border border-gray-200">
-              {new Date(item.createdAt).toLocaleString()}
+              {new Date(item.createdAt).toLocaleString("th-TH", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </td>
             <td className="p-4 border border-gray-200">
-              {new Date(item.updatedAt).toLocaleString()}
+              {new Date(item.updatedAt).toLocaleString("th-TH", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </td>
           </tr>
         ))}

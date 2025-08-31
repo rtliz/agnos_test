@@ -111,6 +111,7 @@ export function PatientForm({ formId }: { formId: string }) {
       console.log("updateStatusForm: ");
       updateStatusForm({
         status: FormStatusEnum.IN_PROGRESS,
+        updatedAt: new Date(),
         id: formId,
       });
     }
@@ -124,6 +125,7 @@ export function PatientForm({ formId }: { formId: string }) {
       updateStatusForm({
         ...formData,
         status: FormStatusEnum.SUBMITTED,
+        updatedAt: new Date(),
         id: formId,
       });
     } catch (error) {

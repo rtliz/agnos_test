@@ -26,7 +26,11 @@ export default function FormManagement() {
       setPatientForms((currentForms) => {
         const updatedForms = currentForms.map((form) =>
           form.id === updatedForm.id
-            ? { ...form, status: updatedForm.status }
+            ? {
+                ...form,
+                status: updatedForm.status,
+                updatedAt: updatedForm.updatedAt,
+              }
             : form
         );
         return updatedForms;
@@ -78,8 +82,8 @@ export default function FormManagement() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-8 grid gap-4">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <h1 className="text-2xl font-bold">Form Management</h1>
         <button
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors disabled:opacity-50 cursor-pointer"
