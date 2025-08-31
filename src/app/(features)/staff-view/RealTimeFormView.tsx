@@ -88,8 +88,8 @@ export function RealTimeFormView({ formId }: Props) {
   return (
     <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
       <div className="w-full max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
-        <div className="flex gap-4 items-center justify-between">
-          <div className="flex gap-4 items-center justify-center">
+        <div className="flex gap-4 items-center flex-wrap justify-between">
+          <div className="flex gap-4 items-center flex-wrap justify-center">
             <Link
               href={"/" + RouteEnum.MANAGE}
               className="px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"

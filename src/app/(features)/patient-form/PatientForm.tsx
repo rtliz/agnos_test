@@ -316,9 +316,9 @@ export function PatientForm({ formId }: { formId: string }) {
       ) : (
         <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
           <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-            <div className="bg-white shadow-2xl rounded-2xl p-0 sm:p-8 grid gap-8 border border-blue-100 relative">
+            <div className="bg-white shadow-2xl rounded-2xl p-4 grid gap-8 border border-blue-100 relative">
               {/* Sticky header for mobile */}
-              <div className="bg-white/90 backdrop-blur-md rounded-t-2xl px-4 pb-4 border-b border-blue-100 flex flex-col items-center">
+              <div className="bg-white/90 backdrop-blur-md rounded-t-2xl p-4 border-b border-blue-100 flex flex-col items-center">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-700 tracking-tight drop-shadow-sm">
                   Form ID {formId}
                 </h1>
