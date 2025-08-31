@@ -177,6 +177,7 @@ export function PatientForm({ formId }: { formId: string }) {
           onChange={(date) =>
             handleChange(field.name, date ? date.toISOString() : "")
           }
+          required={field.required}
           dateFormat="dd/MM/yyyy"
           className="w-full px-4 h-[36px] border border-gray-300  rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500   transition-colors duration-200 bg-white  "
           popperClassName="z-50"

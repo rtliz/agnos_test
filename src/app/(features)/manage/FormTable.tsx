@@ -32,7 +32,9 @@ export function FormTable({ patientForms, onViewForm }: FormTableProps) {
         <tr>
           <th className="p-2 text-left border border-gray-200">Actions</th>
           <th className="p-2 text-left border border-gray-200">Status</th>
-          <th className="p-2 text-left border border-gray-200">ID</th>
+          <th className="p-2 text-left border border-gray-200 min-w-[80px]">
+            Form ID
+          </th>
           <th className="p-2 text-left border border-gray-200">Created At</th>
           <th className="p-2 text-left border border-gray-200">Updated At</th>
         </tr>
