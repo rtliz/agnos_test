@@ -9,9 +9,9 @@ interface Gender {
 
 export async function GET(): Promise<NextResponse<ApiResponse<Gender[]>>> {
   const genders: Gender[] = [
-    { id: 1, value: "male", label: "Male" },
-    { id: 2, value: "female", label: "Female" },
-    { id: 3, value: "other", label: "Other" },
+    { id: 1, value: "Male", label: "Male" },
+    { id: 2, value: "Female", label: "Female" },
+    { id: 3, value: "Other", label: "Other" },
   ];
 
   const response: ApiResponse<Gender[]> = {

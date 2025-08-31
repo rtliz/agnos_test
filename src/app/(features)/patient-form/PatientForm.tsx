@@ -134,7 +134,18 @@ export function PatientForm({ formId }: { formId: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      const requiredFields = formFields.filter((f) => f.required);
+      const isValid = requiredFields.every((f) => formData[f.name]);
+      if (!isValid) {
+        document
+          .getElementById(
+            requiredFields.find((f) => !formData[f.name])?.name || ""
+          )
+          ?.focus();
+        return;
+      }
       updateStatusForm({
         ...formData,
         status: FormStatusEnum.SUBMITTED,
@@ -211,7 +222,6 @@ export function PatientForm({ formId }: { formId: string }) {
               setMobileSelectValue(formData?.[field.name]?.toString() ?? "");
             }}
             value={formData?.[field.name]?.toString() ?? ""}
-            readOnly
             inputMode="none"
             className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
           />
