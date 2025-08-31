@@ -64,8 +64,9 @@ export async function PUT(req: Request): Promise<NextResponse> {
       const socket = getSocket(true);
       socket.on("connect", () => {
         console.log("socket connected", socket.id);
+        socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
+        console.log("socket emit", form);
       });
-      socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
     }
 
     const response: ApiResponse<PatientForm | null> = {
