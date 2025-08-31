@@ -15,6 +15,7 @@ export interface PatientData {
   preferredLanguage: string;
   religion?: string;
   emergencyContact?: string;
+  updatedAt?: Date;
 }
 
 interface FormFieldConfig {
@@ -90,7 +91,7 @@ export const formFields: FormFieldConfig[] = [
   },
   {
     name: "emergencyContact",
-    label: "Emergency Contact",
+    label: "Emergency Contact (optional)",
     placeholder: "Enter emergency contact details",
     type: FieldTypeEnum.text,
   },
