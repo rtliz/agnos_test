@@ -22,7 +22,6 @@ export default function FormManagementPage() {
   }, []);
   useEffect(() => {
     socket?.on(SocketEnum.TRIGGER_FORM_UPDATE, (updatedForm: PatientForm) => {
-      console.log("TRIGGER_FORM_UPDATE: ", updatedForm);
       setPatientForms((currentForms) => {
         const updatedForms = currentForms.map((form) =>
           form.id === updatedForm.id

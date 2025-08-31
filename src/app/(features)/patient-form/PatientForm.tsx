@@ -51,22 +51,17 @@ export function PatientForm({ formId }: { formId: string }) {
   }, [formId]);
 
   const fetchForms = async () => {
-    try {
-      const response = await axios.get(
-        `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
-      );
-      console.log("response.data.data: ", response.data);
-      if (response.data.status === "success" && response.data.data) {
-        if (response.data.data?.status === FormStatusEnum.SUBMITTED) {
-          setIsSubmitted(true);
-        }
-        setIsLoading(false);
-        setFormData(response.data.data);
-      } else {
-        router.replace("/" + RouteEnum.NOTFOUND);
+    const response = await axios.get(
+      `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
+    );
+    if (response.data.status === "success" && response.data.data) {
+      if (response.data.data?.status === FormStatusEnum.SUBMITTED) {
+        setIsSubmitted(true);
       }
-    } catch (error) {
-      console.error("Error fetching patient forms:", error);
+      setIsLoading(false);
+      setFormData(response.data.data);
+    } else {
+      router.replace("/" + RouteEnum.NOTFOUND);
     }
   };
 
@@ -123,7 +118,6 @@ export function PatientForm({ formId }: { formId: string }) {
 
   useEffect(() => {
     if (isFirstChange) {
-      console.log("updateStatusForm: ");
       updateStatusForm({
         status: FormStatusEnum.IN_PROGRESS,
         updatedAt: new Date(),

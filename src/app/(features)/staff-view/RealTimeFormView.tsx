@@ -26,7 +26,6 @@ export function RealTimeFormView({ formId }: Props) {
 
   useEffect(() => {
     const handleFormUpdate = (data: any) => {
-      console.log("data: ", data);
       setFormData((prev) => ({
         ...prev,
         ...data,
@@ -48,7 +47,6 @@ export function RealTimeFormView({ formId }: Props) {
         `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
       );
       if (response.data.status === "success" && response.data.data) {
-        console.log("response.data.data: ", response.data.data);
         setFormData((prev) => ({
           ...prev,
           ...response.data.data,
