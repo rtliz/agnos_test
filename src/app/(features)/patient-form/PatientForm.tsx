@@ -223,6 +223,7 @@ export function PatientForm({ formId }: { formId: string }) {
           placeholder={field.placeholder}
           isSearchable
           isClearable
+          required={field.required}
           className="w-full"
         />
       );
@@ -303,7 +304,7 @@ export function PatientForm({ formId }: { formId: string }) {
                 />
               </svg>
             </div>
-            <label className="text-3xl font-bold text-green-700 drop-shadow-sm">
+            <label className="text-3xl font-bold text-center text-green-700 drop-shadow-sm">
               Form Submitted Successfully!
             </label>
             <p className="text-gray-600 text-center text-md">
