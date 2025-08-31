@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { StatusBadge } from "../../../lib/StatusBadge";
+import { StatusBadge } from "../../shared/components/StatusBadge";
 import { FieldTypeEnum } from "../../shared/enums/field-type.enum";
 import { RouteAPIEnum } from "../../shared/enums/routes-api.enum";
 import { RouteEnum } from "../../shared/enums/routes.enum";
