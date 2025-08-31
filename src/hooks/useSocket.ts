@@ -1,4 +1,4 @@
-import { PatientData } from "@/app/shared/components/patient-form/config-form";
+import { PatientData } from "@/app/(features)/patient-form/config-form";
 import { SocketEnum } from "@/app/shared/enums/socket.enum";
 import { getSocket } from "@/lib/socketClient";
 import { useEffect, useRef, useState } from "react";
@@ -17,16 +17,11 @@ export function useSocket(room: SocketEnum, formId?: string) {
       setSocket(s);
 
       s.on("connect", () => {
-        console.log(
-          "room === SocketEnum.MANAGE_FORMS: ",
-          room === SocketEnum.MANAGE_FORMS
-        );
         if (room === SocketEnum.MANAGE_FORMS) {
           s.emit(SocketEnum.MANAGE_FORMS);
         } else {
           s.emit(room, { formId });
         }
-        console.log("socket connected", s.id, room, formId);
       });
 
       s.on("connect_error", (err) => {

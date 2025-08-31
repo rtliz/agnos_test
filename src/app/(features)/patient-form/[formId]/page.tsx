@@ -1,4 +1,4 @@
-import { PatientForm } from "@/app/shared/components/patient-form/PatientForm";
+import { PatientForm } from "../PatientForm";
 
 export default async function PatientFormPage({ params }: any) {
   return (

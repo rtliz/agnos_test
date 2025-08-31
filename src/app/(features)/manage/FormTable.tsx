@@ -3,9 +3,9 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Tooltip } from "react-tooltip";
-import { FormStatusEnum } from "../../enums/form-status.enum";
-import { RouteEnum } from "../../enums/routes.enum";
-import { StatusBadge } from "../../lib/StatusBadge";
+import { StatusBadge } from "../../shared/components/StatusBadge";
+import { FormStatusEnum } from "../../shared/enums/form-status.enum";
+import { RouteEnum } from "../../shared/enums/routes.enum";
 interface FormTableProps {
   patientForms: PatientForm[];
   onViewForm: (formId: string) => void;

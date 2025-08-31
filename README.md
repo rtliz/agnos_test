@@ -53,9 +53,13 @@ public           # Static assets (images, icons)
 
 ## Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run socket:start` - Start socket server
+- `npm run dev` - Start Next.js development server
+- `npm run build` - Build Next.js app for production
+- `npm run socket:start` - Start socket.io server (for real-time features)
+- `npm run build_docker` - Build Docker image for Next.js app (local)
+- `npm run run_docker` - Run Docker container for Next.js app (local)
+- `npm run build_docker:socket` - Build Docker image for socket.io server (local)
+- `npm run run_docker:socket` - Run Docker container for socket.io server (local)
 
 ## License
 

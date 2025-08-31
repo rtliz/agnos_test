@@ -1,4 +1,4 @@
-import { RealTimeFormView } from "@/app/shared/components/staff-view/RealTimeFormView";
+import { RealTimeFormView } from "@/app/(features)/staff-view/RealTimeFormView";
 
 export default function StaffViewPage({ params }: any) {
   return (

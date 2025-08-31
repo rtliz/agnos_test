@@ -12,7 +12,9 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <span className={`px-3 py-1 rounded-full text-sm ${statusStyles[status]}`}>
+    <span
+      className={`px-3 py-1 rounded-full font-bold text-sm ${statusStyles[status]}`}
+    >
       {status}
     </span>
   );

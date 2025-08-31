@@ -1,4 +1,4 @@
-import { FieldTypeEnum } from "../../enums/field-type.enum";
+import { FieldTypeEnum } from "@/app/shared/enums/field-type.enum";
 
 export interface PatientData {
   id: string;
