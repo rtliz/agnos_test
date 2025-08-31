@@ -216,20 +216,20 @@ export function PatientForm({ formId }: { formId: string }) {
   };
 
   return isLoading ? (
-    <div className="w-full h-[80dvh] flex items-center justify-center">
-      <div className="loader"></div>
+    <div className="h-screen flex items-center justify-center">
+      <div className="loader scale-125"></div>
     </div>
   ) : isSubmitted ? (
     <motion.div
-      initial={{ opacity: 0, y: 0 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1 }}
-      className="w-full h-[80dvh] flex flex-col items-center justify-center  "
+      transition={{ duration: 0.8 }}
+      className="h-screen flex flex-col items-center justify-center "
     >
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center  ">
+      <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-xl shadow-xl border border-green-100">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
           <svg
-            className="w-8 h-8 text-green-500"
+            className="w-10 h-10 text-green-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -242,10 +242,10 @@ export function PatientForm({ formId }: { formId: string }) {
             />
           </svg>
         </div>
-        <label className="text-2xl font-semibold text-gray-800">
+        <label className="text-3xl font-bold text-green-700 drop-shadow-sm">
           Form Submitted Successfully!
         </label>
-        <p className="text-gray-600 text-center">
+        <p className="text-gray-600 text-center text-lg">
           Thank you for your submission.
           <br />
           Your information has been saved successfully.
@@ -253,36 +253,38 @@ export function PatientForm({ formId }: { formId: string }) {
       </div>
     </motion.div>
   ) : (
-    <div className="grid gap-4">
-      <h1 className="text-2xl font-bold text-center">Form {formId}</h1>
-      <form onSubmit={handleSubmit} className="gap-6 w-full mx-auto p-6">
-        Form {formId}
-        <div className="bg-white shadow-md rounded-lg p-6 grid gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="h-full flex items-center justify-center  p-8 ">
+      <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
+        <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
+          <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
+            Form ID {formId}
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {formFields.map((field) => (
               <div key={field.name} className="grid gap-2">
                 <label
                   htmlFor={field.name}
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-base font-semibold text-blue-900 mb-1 tracking-wide"
                 >
                   {field.label}
-                  {field.required && <span className="text-red-500">*</span>}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
                 </label>
                 {renderField(field)}
               </div>
             ))}
           </div>
-
-          <div className=" flex justify-center">
+          <div className="flex justify-center mt-4">
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md disabled:opacity-50"
+              className="cursor-pointer flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
             >
               {loading ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} spin />
-                  Loading...
+                  Saving...
                 </>
               ) : (
                 <>
