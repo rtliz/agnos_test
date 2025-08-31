@@ -1,5 +1,4 @@
 import io, { Socket } from "socket.io-client";
-
 let socket: Socket | null = null;
 
 export function getSocket(forceNew: boolean = false): Socket {
@@ -8,7 +7,7 @@ export function getSocket(forceNew: boolean = false): Socket {
     closeSocket();
   }
   socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
   });
 
   socket.on("connect_error", (err) => {

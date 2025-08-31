@@ -1,8 +1,6 @@
 import { addForm, getForms } from "@/app/shared/data/forms";
-import { SocketEnum } from "@/app/shared/enums/socket.enum";
 import { ApiResponse } from "@/app/shared/types/api/response";
 import type { PatientForm } from "@/app/shared/types/patient-form";
-import { getSocket } from "@/lib/socketClient";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request): Promise<NextResponse> {
@@ -53,7 +51,6 @@ export async function GET(): Promise<NextResponse> {
   return NextResponse.json(response);
 }
 
-// อัพเดทข้อมูลฟอร์ม
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     const body = await req.json();
@@ -61,12 +58,6 @@ export async function PUT(req: Request): Promise<NextResponse> {
     let form = currentForms.find((f: PatientForm) => f.id === body.id);
     if (form) {
       Object.assign(form, body);
-      const socket = getSocket(true);
-      socket.on("connect", () => {
-        console.log("socket connected", socket.id);
-        socket.emit(SocketEnum.TRIGGER_FORM_UPDATE, form);
-        console.log("socket emit", form);
-      });
     }
 
     const response: ApiResponse<PatientForm | null> = {

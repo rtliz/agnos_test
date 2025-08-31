@@ -2,9 +2,12 @@
 
 import { useSocket } from "@/hooks/useSocket";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { RouteAPIEnum } from "../../enums/routes-api.enum";
+import { RouteEnum } from "../../enums/routes.enum";
 import { SocketEnum } from "../../enums/socket.enum";
 import { formFields, PatientData } from "../patient-form/config-form";
 
@@ -14,6 +17,7 @@ interface Props {
 
 export function RealTimeFormView({ formId }: Props) {
   const [formData, setFormData] = useState<Partial<PatientData>>({});
+  const router = useRouter();
   const { socket } = useSocket(
     SocketEnum.JOIN_FORM_ROOM,
     decodeURIComponent(formId)
@@ -42,12 +46,14 @@ export function RealTimeFormView({ formId }: Props) {
       const response = await axios.get(
         `${RouteAPIEnum.API_PATIENT_FORMS}/${formId}`
       );
-      if (response.data.status === "success") {
+      if (response.data.status === "success" && response.data.data) {
         console.log("response.data.data: ", response.data.data);
         setFormData((prev) => ({
           ...prev,
           ...response.data.data,
         }));
+      } else {
+        router.replace("/" + RouteEnum.NOTFOUND);
       }
     } catch (error) {
       console.error("Error fetching patient forms:", error);
@@ -59,7 +65,15 @@ export function RealTimeFormView({ formId }: Props) {
     if (!value) return <span className="text-gray-400">No data available</span>;
 
     if (field.type === FieldTypeEnum.date) {
-      return <span>{new Date(value.toString()).toLocaleDateString()}</span>;
+      return (
+        <span>
+          {new Date(value.toString()).toLocaleDateString("th-TH", {
+            year: "2-digit",
+            month: "2-digit",
+            day: "2-digit",
+          })}
+        </span>
+      );
     }
 
     if (field.type === FieldTypeEnum.select) {
@@ -73,30 +87,39 @@ export function RealTimeFormView({ formId }: Props) {
   };
 
   return (
-    <div className="w-full  p-6">
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-6">
+    <div className="h-full flex items-center justify-center  p-6 ">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
+        <div className="flex gap-4 items-center ">
+          <Link
+            href={"/" + RouteEnum.MANAGE}
+            className="mb-4 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"
+          >
+            Back
+          </Link>
+          <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
+            Form ID {formId}
+          </h1>
+        </div>
+        <h2 className="text-xl font-semibold text-blue-900">
           Patient Information (Real-time)
         </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {formFields.map((field) => (
-            <div key={field.name} className="gap-2 grid">
+            <div key={field.name} className="gap-1 grid">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-base font-semibold text-blue-900 mb-1 tracking-wide">
                   {field.label}
                   {field.required && (
                     <span className="text-red-500 ml-1">*</span>
                   )}
                 </label>
               </div>
-              <div className="p-3 bg-gray-50 rounded-md min-h-[2.5rem] flex items-center">
+              <div className="px-4 bg-gray-50 rounded-md min-h-[36px] flex items-center">
                 {renderFieldValue(field)}
               </div>
             </div>
           ))}
         </div>
-
         <div className="mt-6 text-sm text-gray-500">
           * Data will update automatically when the patient enters information
         </div>

@@ -9,7 +9,7 @@ const port = process.env.PORT || 3001;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-app.prepare().then(() => {
+app.prepare().then(() => { 
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer, {
@@ -18,6 +18,10 @@ app.prepare().then(() => {
       methods: ["GET", "POST"]
     }
   });
+ 
+  // Store latest form data by formId
+  const formDataStore = {};
+
   io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
 
@@ -25,12 +29,24 @@ app.prepare().then(() => {
       const formId = data.formId;
       socket.join(formId);
       console.log(`Socket ${socket.id} has joined the room for Form ${formId}`);
+      // Send latest data to the client that just joined
+      if (formDataStore[formId]) {
+        socket.emit('PATIENT_FORM_UPDATE', formDataStore[formId]);
+      }
     });
 
     socket.on('PATIENT_FORM_UPDATE', (res) => {
       const { formId,  data} = res;
+      // Update latest data in store
+      formDataStore[formId] = data;
       console.log(`Broadcasting update for form ${formId} from ${socket.id}`);
       socket.broadcast.to(formId).emit('PATIENT_FORM_UPDATE', data);
+    });
+
+    socket.on('CLEAR_FORM_DATA', (formId) => {
+      // Remove data for this formId
+      delete formDataStore[formId];
+      console.log(`Form data for ${formId} cleared.`);
     });
 
     socket.on('MANAGE_FORMS', (_) => {
@@ -42,7 +58,6 @@ app.prepare().then(() => {
       console.log(`Socket ${socket.id} MANAGE_FORMS  > TRIGGER_FORM_UPDATE: `, data);
       socket.broadcast.to("MANAGE_FORMS").emit('TRIGGER_FORM_UPDATE', data);
     });
-
 
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);
