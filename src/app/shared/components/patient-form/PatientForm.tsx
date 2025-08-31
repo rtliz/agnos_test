@@ -98,6 +98,7 @@ export function PatientForm({ formId }: { formId: string }) {
     const updatedData = (prev: Partial<PatientData>) => ({
       ...prev,
       [name]: value,
+      status: FormStatusEnum.IN_PROGRESS,
     });
 
     setFormData(updatedData);
