@@ -9,6 +9,7 @@ import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { RouteAPIEnum } from "../../enums/routes-api.enum";
 import { RouteEnum } from "../../enums/routes.enum";
 import { SocketEnum } from "../../enums/socket.enum";
+import { StatusBadge } from "../../lib/StatusBadge";
 import { formFields, PatientData } from "../patient-form/config-form";
 
 interface Props {
@@ -89,16 +90,19 @@ export function RealTimeFormView({ formId }: Props) {
   return (
     <div className="h-full flex items-center justify-center  p-6 ">
       <div className="bg-white shadow-2xl rounded-2xl p-8 grid gap-8 border border-blue-100">
-        <div className="flex gap-4 items-center ">
-          <Link
-            href={"/" + RouteEnum.MANAGE}
-            className="mb-4 px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"
-          >
-            Back
-          </Link>
-          <h1 className="text-3xl font-extrabold text-center text-blue-700 mb-2 tracking-tight drop-shadow-sm">
-            Form ID {formId}
-          </h1>
+        <div className="flex gap-4 items-center justify-between">
+          <div className="flex gap-4 items-center justify-center">
+            <Link
+              href={"/" + RouteEnum.MANAGE}
+              className="px-4 py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold w-fit flex items-center gap-2 shadow"
+            >
+              Back
+            </Link>
+            <h1 className="text-3xl font-extrabold text-center text-blue-700  tracking-tight drop-shadow-sm">
+              Form ID {formId}
+            </h1>
+          </div>
+          <StatusBadge status={formData.status} />
         </div>
         <h2 className="text-xl font-semibold text-blue-900">
           Patient Information (Real-time)
