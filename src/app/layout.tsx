@@ -1,6 +1,7 @@
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "react-datepicker/dist/react-datepicker.css";
 import "react-tooltip/dist/react-tooltip.css";
 import "./globals.css";
 const geistSans = Geist({
