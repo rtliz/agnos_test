@@ -7,13 +7,13 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
 import Select from "react-select";
 import { FieldTypeEnum } from "../../enums/field-type.enum";
 import { FormStatusEnum } from "../../enums/form-status.enum";
 import { RouteAPIEnum } from "../../enums/routes-api.enum";
 import { RouteEnum } from "../../enums/routes.enum";
 import { SocketEnum } from "../../enums/socket.enum";
-import { CustomDatePicker } from "../../lib/CustomDatePicker";
 import { formFields, PatientData } from "./config-form";
 
 interface Religion {
@@ -176,12 +176,18 @@ export function PatientForm({ formId }: { formId: string }) {
     if (field.type === FieldTypeEnum.date) {
       const dateValue = formData?.[field.name];
       return (
-        <CustomDatePicker
+        <DatePicker
           selected={typeof dateValue === "string" ? new Date(dateValue) : null}
           placeholderText={field.placeholder}
           onChange={(date) =>
             handleChange(field.name, date ? date.toISOString() : "")
           }
+          dateFormat="dd/MM/yyyy"
+          className="w-full px-4 h-[36px] border border-gray-300  rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500   transition-colors duration-200 bg-white  "
+          popperClassName="z-50"
+          popperPlacement="bottom-start"
+          showPopperArrow={false}
+          calendarClassName="shadow-xl border border-gray-200  rounded-lg bg-white  "
         />
       );
     }
@@ -225,6 +231,20 @@ export function PatientForm({ formId }: { formId: string }) {
         />
       );
     }
+    if (field.type === FieldTypeEnum.email) {
+      return (
+        <input
+          {...commonProps}
+          placeholder={field.placeholder}
+          type="email"
+          value={formData?.[field.name]?.toString() ?? ""}
+          onChange={(e) => handleChange(field.name, e.target.value)}
+          pattern="^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+          className="w-full h-9 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+        />
+      );
+    }
+
     if (field.type === FieldTypeEnum.tel) {
       return (
         <input
