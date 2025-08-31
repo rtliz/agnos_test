@@ -319,7 +319,7 @@ export function PatientForm({ formId }: { formId: string }) {
           </div>
         </motion.div>
       ) : (
-        <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-0 sm:p-6">
+        <div className="h-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
           <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
             <div className="bg-white shadow-2xl rounded-2xl p-0 sm:p-8 grid gap-8 border border-blue-100 relative">
               {/* Sticky header for mobile */}
